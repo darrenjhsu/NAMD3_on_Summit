@@ -82,7 +82,7 @@ Using 1 GPU and 4 CPU cores:   94 ns / day
 
 N cores, N GPUs without `+setcpuaffinity`
 ```
-jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0 +p<N> +setcpuaffinity <input conf> | tee <output log>
+jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0 +p<N> <input conf> | tee <output log>
 Using 2 GPUs and 2 CPU cores: 126 ns / day
 Using 3 GPUs and 3 CPU cores: 135 ns / day
 Using 4 GPUs and 4 CPU cores: 125 ns / day
@@ -107,6 +107,8 @@ Using 3 GPUs and 6 CPU cores: 143 ns / day
 
 ```
 
+Suggestion: Always use `+setcpuaffinity`. If using more than one GPU, ask for same number of CPU cores. 
+
 
 ### STMV (1.07M atoms)
 
@@ -124,3 +126,5 @@ Using 1 GPU and 1 CPU core:    8.5 ns / day
 Using 4 GPUs and 4 CPU cores: 24.3 ns / day
 Using 6 GPUs and 6 CPU cores: 31.4 ns / day
 ```
+
+The trend here roughly corresponds to that posted on [NAMD3 announcement](http://www.ks.uiuc.edu/Research/namd/alpha/3.0alpha/) with slightly lower performance probably due to other settings.
