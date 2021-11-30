@@ -46,8 +46,8 @@ cd $PATH
 ```
 
 Submitting NAMD3 runs is quite easy.
-The easiest configuration, which is already pretty powerful, is with one CPU and one GPU. (Line 1)
-One can request more than 1 CPU to accompany 1 GPU. (Line 2)
+The easiest configuration, which is already pretty powerful, is with one CPU core and one GPU (NVIDIA V100). (Line 1)
+One can request more than 1 core to accompany 1 GPU. (Line 2)
 Alternatively, one can request multiple GPUs and an equal number of CPUs. (Line 3)
 
 ```bash
@@ -57,4 +57,70 @@ jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0,1,2...<N-1> +p<N> +setcpu
 ```
 
 
-# Benchmarking (unofficial)
+## Benchmarking (unofficial)
+
+These are just by me looking at the runtime output and they are not extremely accurate.
+
+### Apoa1 (92K atoms)
+
+M cores, 1 GPU without `+setcpuaffinity`
+```
+jsrun -r1 -c<M> -g1 -a1 $NAMD_PATH/namd3 +devices 0 +p<M> <input conf> | tee <output log>
+Using 1 GPU and 1 CPU core:    95 ns / day
+Using 1 GPU and 2 CPU cores:   94 ns / day
+Using 1 GPU and 4 CPU cores:   92 ns / day
+```
+
+M cores, 1 GPU with `+setcpuaffinity`
+```
+jsrun -r1 -c<M> -g1 -a1 $NAMD_PATH/namd3 +devices 0 +p<M> +setcpuaffinity <input conf> | tee <output log>
+Using 1 GPU and 1 CPU core:    95 ns / day
+Using 1 GPU and 2 CPU cores:   94 ns / day
+Using 1 GPU and 4 CPU cores:   94 ns / day
+```
+
+
+N cores, N GPUs without `+setcpuaffinity`
+```
+jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0 +p<N> +setcpuaffinity <input conf> | tee <output log>
+Using 2 GPUs and 2 CPU cores: 126 ns / day
+Using 3 GPUs and 3 CPU cores: 135 ns / day
+Using 4 GPUs and 4 CPU cores: 125 ns / day
+Using 6 GPUs and 6 CPU cores: Crashes
+```
+
+N cores, N GPUs with `+setcpuaffinity`
+```
+jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0,1,2...<N-1> +p<N> +setcpuaffinity <input conf> | tee <output log>
+Using 1 GPU and 1 CPU core: 95 ns / day
+Using 2 GPUs and 2 CPU cores: 132 ns / day
+Using 3 GPUs and 3 CPU cores: 151 ns / day (!)
+Using 4 GPUs and 4 CPU cores: 140 ns / day
+Using 6 GPUs and 6 CPU cores: 125 ns / day
+```
+
+Bonus: Asking 2 cores per GPU
+```
+jsrun -r1 -c<2*N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0,1,2...<N-1> +p<2*N> +setcpuaffinity <input conf> | tee <output log>
+Using 2 GPUs and 4 CPU cores: 131 ns / day
+Using 3 GPUs and 6 CPU cores: 143 ns / day
+
+```
+
+
+### STMV (1.07M atoms)
+
+M cores, 1 GPU with `+setcpuaffinity`
+```
+jsrun -r1 -c<M> -g1 -a1 $NAMD_PATH/namd3 +devices 0 +p<M> +setcpuaffinity <input conf> | tee <output log>
+Using 1 GPU and 1 CPU core:    8.5 ns / day
+Using 1 GPU and 4 CPU cores:   8.4 ns / day
+```
+
+N cores, N GPUs with `+setcpuaffinity`
+```
+jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0,1,2...<N-1> +p<N> +setcpuaffinity <input conf> | tee <output log>
+Using 1 GPU and 1 CPU core:    8.5 ns / day
+Using 4 GPUs and 4 CPU cores: 24.3 ns / day
+Using 6 GPUs and 6 CPU cores: 31.4 ns / day
+```
