@@ -82,7 +82,7 @@ Using 1 GPU and 4 CPU cores:   94 ns / day
 
 N cores, N GPUs without `+setcpuaffinity`
 ```
-jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0 +p<N> <input conf> | tee <output log>
+jsrun -r1 -c<N> -g <N> -a1 $NAMD_PATH/namd3 +devices 0,1,2...<N-1> +p<N> <input conf> | tee <output log>
 Using 2 GPUs and 2 CPU cores: 126 ns / day
 Using 3 GPUs and 3 CPU cores: 135 ns / day
 Using 4 GPUs and 4 CPU cores: 125 ns / day
