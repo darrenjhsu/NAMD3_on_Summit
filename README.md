@@ -128,3 +128,28 @@ Using 6 GPUs and 6 CPU cores: 31.4 ns / day
 ```
 
 The trend here roughly corresponds to that posted on [NAMD3 announcement](http://www.ks.uiuc.edu/Research/namd/alpha/3.0alpha/) with slightly lower performance probably due to other settings.
+
+
+## Running multiple NAMD3 simulations on Summit
+
+I experimented a bit and think the below code would work well. Use case: Markov state model-like sampling scheme.
+
+```bash
+#!/bin/bash
+#BSUB -nnodes 2
+#BSUB -W 0:10
+#BSUB -J JOBNAME
+#BSUB -P ANS042
+
+module load cuda fftw
+for ii in `seq 0 11`;
+do
+    cd simulation_${ii}
+    jsrun -r1 -c1 -g1 -a1 -n1 path/to/namd3 +setcpuaffinity +devices 0 +p1 <input conf> | tee <output log> &
+    cd ..
+done
+
+wait
+```
+
+That `-n1` is really important. Not including so would make `charm++` think that there are multiple hosts and use a wrong configuration. 
