@@ -23,6 +23,10 @@ cd namd
 ln -s ../charm .
 # Get the NAMD3 development branch
 git checkout devel
+# Get TCL
+wget http://www.ks.uiuc.edu/Research/namd/libraries/tcl8.5.9-linux-ppc64le-threaded.tar.gz
+tar xzf tcl8.5.9-linux-ppc64le-threaded.tar.gz
+mv tcl8.5.9-linux-ppc64le-threaded tcl-threaded
 ./config Linux-POWER-g++.summit30a9 --charm-arch pamilrts-linux-ppc64le-smp --with-fftw3 --with-cuda --cuda-prefix $CUDA_PREFIX --with-single-node-cuda
 cd Linux-POWER-g++.summit30a9
 make -j8
