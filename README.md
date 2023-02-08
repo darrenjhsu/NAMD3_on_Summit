@@ -10,7 +10,7 @@ I've followed and adapted Josh Vermaas's instruction on [GitHub](https://github.
 
 ```bash
 CUDA_PREFIX=/sw/summit/cuda/11.0.3
-module load cuda/11.0.3 fftw gcc
+module load cuda/11.0.3 fftw xl
 mkdir NAMDbuild
 cd NAMDbuild
 git clone https://github.com/UIUC-PPL/charm.git
